@@ -22,12 +22,9 @@ export default function Booking() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    company: '',
-    service_type: '',
-    budget: '',
+    service: '',
     message: '',
-    preferred_date: ''
+    preferredDate: ''
   });
 
   const handleChange = (e) => {
@@ -171,9 +168,9 @@ export default function Booking() {
               <Briefcase size={14} /> Service *
             </label>
             <select
-              name="service_type"
+              name="service"
               required
-              value={formData.service_type}
+              value={formData.service}
               onChange={handleChange}
               className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all appearance-none cursor-pointer"
               data-testid="select-service"
@@ -209,9 +206,9 @@ export default function Booking() {
             </label>
             <input
               type="date"
-              name="preferred_date"
+              name="preferredDate"
               required
-              value={formData.preferred_date}
+              value={formData.preferredDate}
               onChange={handleChange}
               min={new Date().toISOString().split('T')[0]}
               className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"

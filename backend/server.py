@@ -177,12 +177,9 @@ class LoginRequest(BaseModel):
 class BookingRequest(BaseModel):
     name: str
     email: EmailStr
-    phone: Optional[str] = None
-    company: Optional[str] = None
-    service_type: str
-    budget: Optional[str] = None
+    service: str
     message: str
-    preferred_date: str
+    preferredDate: str
 
 class ServiceModel(BaseModel):
     title: str
@@ -194,11 +191,8 @@ class ServiceModel(BaseModel):
 class ProjectModel(BaseModel):
     title: str
     description: str
-    image_url: str
-    category: str
-    technologies: list[str]
+    image: str
     link: Optional[str] = None
-    order: int = 0
 
 class ContentModel(BaseModel):
     key: str
@@ -307,20 +301,22 @@ async def refresh_token(request: Request, response: Response):
 @app.post("/api/bookings")
 async def create_booking(booking: BookingRequest):
     result = await db.bookings.insert_one({
-        **booking.model_dump(),
-        "status": "pending",
-        "created_at": datetime.now(timezone.utc)
+        "name": booking.name,
+        "email": booking.email,
+        "service": booking.service,
+        "message": booking.message,
+        "preferredDate": booking.preferredDate,
+        "createdAt": datetime.now(timezone.utc)
     })
     return {"id": str(result.inserted_id), "message": "Booking submitted successfully"}
 
 @app.get("/api/bookings")
 async def get_bookings(request: Request):
     await get_admin_user(request)
-    bookings = await db.bookings.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
-    # Convert ObjectId to string if needed
+    bookings = await db.bookings.find({}).sort("createdAt", -1).to_list(100)
     for b in bookings:
-        if "_id" in b:
-            b["id"] = str(b["_id"])
+        b["id"] = str(b["_id"])
+        del b["_id"]
     return bookings
 
 @app.patch("/api/bookings/{booking_id}/status")
@@ -365,7 +361,7 @@ async def delete_service(service_id: str, request: Request):
 # Projects endpoints (public read, admin write)
 @app.get("/api/projects")
 async def get_projects():
-    projects = await db.projects.find({}).sort("order", 1).to_list(100)
+    projects = await db.projects.find({}).to_list(100)
     for p in projects:
         p["id"] = str(p["_id"])
         del p["_id"]
@@ -374,7 +370,12 @@ async def get_projects():
 @app.post("/api/projects")
 async def create_project(project: ProjectModel, request: Request):
     await get_admin_user(request)
-    result = await db.projects.insert_one(project.model_dump())
+    result = await db.projects.insert_one({
+        "title": project.title,
+        "description": project.description,
+        "image": project.image,
+        "link": project.link
+    })
     return {"id": str(result.inserted_id), "message": "Project created"}
 
 @app.put("/api/projects/{project_id}")
@@ -382,7 +383,12 @@ async def update_project(project_id: str, project: ProjectModel, request: Reques
     await get_admin_user(request)
     await db.projects.update_one(
         {"_id": ObjectId(project_id)},
-        {"$set": project.model_dump()}
+        {"$set": {
+            "title": project.title,
+            "description": project.description,
+            "image": project.image,
+            "link": project.link
+        }}
     )
     return {"message": "Project updated"}
 
