@@ -5,13 +5,7 @@ __pycache__/
 .venv/
 venv/
 
-# Environment files
-**/.env
-**/.env.*
-.env.local
-.env.production
-
-# Sensitive files
+# Sensitive files - credentials only
 memory/test_credentials.md
 
 # Build outputs
@@ -26,13 +20,10 @@ dist/
 
 # Logs
 *.log
-/var/log/
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Test files
-*.test.js
-*.spec.js
 coverage/
