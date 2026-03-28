@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Booking from './pages/Booking';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import IntroPage from './pages/IntroPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -13,12 +12,12 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<IntroPage />} />
+          <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/booking" element={<Booking />} />
-          <Route path="/process-admin-secure" element={<AdminLogin />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
           <Route 
-            path="/process-admin-secure/dashboard" 
+            path="/admin-dashboard" 
             element={
               <ProtectedRoute>
                 <AdminDashboard />
