@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
-import { LogOut, Calendar, FolderOpen, Plus, Trash2, Loader2 } from 'lucide-react';
+import { LogOut, Calendar, FolderOpen, Plus, Trash2, Loader2, Eye, X } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [projectForm, setProjectForm] = useState({ title: '', description: '', image: '', link: '' });
 
@@ -38,6 +39,17 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     await logout();
     navigate('/admin-login');
+  };
+
+  const handleDeleteBooking = async (id) => {
+    if (!window.confirm('Delete this booking?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/bookings/${id}`, { withCredentials: true });
+      setSelectedBooking(null);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+    }
   };
 
   const handleAddProject = async (e) => {
@@ -84,7 +96,7 @@ export default function AdminDashboard() {
         </button>
       </header>
 
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="p-6 max-w-6xl mx-auto">
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
           <button
@@ -111,22 +123,53 @@ export default function AdminDashboard() {
         {activeTab === 'bookings' && (
           <div data-testid="bookings-tab">
             {bookings.length === 0 ? (
-              <p className="text-gray-500 text-center py-12">No bookings yet</p>
+              <div className="text-center py-16">
+                <Calendar size={48} className="mx-auto text-gray-600 mb-4" />
+                <p className="text-gray-500">No bookings yet</p>
+              </div>
             ) : (
-              <div className="space-y-3">
-                {bookings.map((booking, i) => (
-                  <div key={booking.id || i} className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-medium">{booking.name}</p>
-                        <p className="text-gray-400 text-sm">{booking.email}</p>
-                      </div>
-                      <span className="text-xs text-gray-500">{booking.preferredDate}</span>
-                    </div>
-                    <p className="text-sm text-cyan-400 mb-2">{booking.service}</p>
-                    <p className="text-gray-400 text-sm">{booking.message}</p>
-                  </div>
-                ))}
+              <div className="bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10 bg-white/[0.02]">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Name</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Email</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Service</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Date</th>
+                      <th className="text-right px-4 py-3 text-sm font-medium text-gray-400">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookings.map((booking) => (
+                      <tr key={booking.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                        <td className="px-4 py-3 text-sm">{booking.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-400">{booking.email}</td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className="px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 text-xs">
+                            {booking.service || booking.service_type || '-'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-400">{booking.preferredDate || booking.preferred_date || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-right">
+                          <button
+                            onClick={() => setSelectedBooking(booking)}
+                            className="p-1.5 rounded hover:bg-white/10 text-gray-400 hover:text-white mr-1"
+                            data-testid={`view-booking-${booking.id}`}
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBooking(booking.id)}
+                            className="p-1.5 rounded hover:bg-red-500/10 text-gray-400 hover:text-red-400"
+                            data-testid={`delete-booking-${booking.id}`}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -144,14 +187,14 @@ export default function AdminDashboard() {
             </button>
 
             {showProjectForm && (
-              <form onSubmit={handleAddProject} className="bg-white/5 border border-white/10 rounded-lg p-4 mb-4 space-y-3" data-testid="project-form">
+              <form onSubmit={handleAddProject} className="bg-white/[0.02] border border-white/10 rounded-lg p-4 mb-4 space-y-3" data-testid="project-form">
                 <input
                   type="text"
                   placeholder="Title"
                   value={projectForm.title}
                   onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
                   required
-                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-white/20"
                 />
                 <input
                   type="text"
@@ -159,7 +202,7 @@ export default function AdminDashboard() {
                   value={projectForm.description}
                   onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
                   required
-                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-white/20"
                 />
                 <input
                   type="url"
@@ -167,20 +210,20 @@ export default function AdminDashboard() {
                   value={projectForm.image}
                   onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
                   required
-                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-white/20"
                 />
                 <input
                   type="url"
                   placeholder="Project Link (optional)"
                   value={projectForm.link}
                   onChange={(e) => setProjectForm({ ...projectForm, link: e.target.value })}
-                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-white/20"
                 />
                 <div className="flex gap-2">
                   <button type="submit" className="px-4 py-2 rounded bg-white text-black text-sm font-medium">
                     Save
                   </button>
-                  <button type="button" onClick={() => setShowProjectForm(false)} className="px-4 py-2 rounded text-gray-400 text-sm">
+                  <button type="button" onClick={() => setShowProjectForm(false)} className="px-4 py-2 rounded text-gray-400 text-sm hover:text-white">
                     Cancel
                   </button>
                 </div>
@@ -188,11 +231,14 @@ export default function AdminDashboard() {
             )}
 
             {projects.length === 0 ? (
-              <p className="text-gray-500 text-center py-12">No projects yet</p>
+              <div className="text-center py-16">
+                <FolderOpen size={48} className="mx-auto text-gray-600 mb-4" />
+                <p className="text-gray-500">No projects yet</p>
+              </div>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {projects.map((project) => (
-                  <div key={project.id} className="bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                  <div key={project.id} className="bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden">
                     {project.image && (
                       <img src={project.image} alt={project.title} className="w-full h-32 object-cover" />
                     )}
@@ -200,11 +246,11 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-medium">{project.title}</p>
-                          <p className="text-gray-400 text-sm">{project.description}</p>
+                          <p className="text-gray-400 text-sm mt-1">{project.description}</p>
                         </div>
                         <button
                           onClick={() => handleDeleteProject(project.id)}
-                          className="p-1 text-gray-500 hover:text-red-400"
+                          className="p-1.5 rounded hover:bg-red-500/10 text-gray-500 hover:text-red-400"
                           data-testid={`delete-project-${project.id}`}
                         >
                           <Trash2 size={16} />
@@ -218,6 +264,61 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Booking Details Modal */}
+      {selectedBooking && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" data-testid="booking-modal">
+          <div className="bg-[#0a0a0f] border border-white/10 rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+              <h3 className="font-medium">Booking Details</h3>
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="p-1 rounded hover:bg-white/10 text-gray-400"
+                data-testid="close-modal"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Name</p>
+                <p className="text-white">{selectedBooking.name}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Email</p>
+                <p className="text-white">{selectedBooking.email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Service</p>
+                <p className="text-cyan-400">{selectedBooking.service || selectedBooking.service_type}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Preferred Date</p>
+                <p className="text-white">{selectedBooking.preferredDate || selectedBooking.preferred_date}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Message</p>
+                <p className="text-gray-300 text-sm">{selectedBooking.message}</p>
+              </div>
+            </div>
+            <div className="px-5 py-4 border-t border-white/10 flex gap-2">
+              <button
+                onClick={() => handleDeleteBooking(selectedBooking.id)}
+                className="px-4 py-2 rounded-lg bg-red-500/10 text-red-400 text-sm hover:bg-red-500/20"
+                data-testid="modal-delete-btn"
+              >
+                Delete Booking
+              </button>
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="px-4 py-2 rounded-lg bg-white/5 text-gray-300 text-sm hover:bg-white/10 ml-auto"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

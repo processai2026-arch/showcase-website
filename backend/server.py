@@ -319,6 +319,12 @@ async def get_bookings(request: Request):
         del b["_id"]
     return bookings
 
+@app.delete("/api/bookings/{booking_id}")
+async def delete_booking(booking_id: str, request: Request):
+    await get_admin_user(request)
+    await db.bookings.delete_one({"_id": ObjectId(booking_id)})
+    return {"message": "Booking deleted"}
+
 @app.patch("/api/bookings/{booking_id}/status")
 async def update_booking_status(booking_id: str, status: dict, request: Request):
     await get_admin_user(request)
