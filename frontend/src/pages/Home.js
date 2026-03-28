@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Bot, Globe, MessageSquare, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import axios from 'axios';
+import { ArrowRight, Bot, Globe, MessageSquare, ChevronLeft, ChevronRight, Menu, X, ExternalLink } from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Navbar
 function Navbar() {
@@ -226,39 +229,51 @@ function ServicesSection() {
 function ProjectsSection() {
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const projects = [
+  // Default projects (shown when no projects in DB)
+  const defaultProjects = [
     {
+      id: '1',
       title: 'E-Commerce AI Assistant',
       description: 'Smart product recommendations and customer support chatbot.',
-      tags: ['AI', 'Chatbot', 'E-Commerce'],
       image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop'
     },
     {
+      id: '2',
       title: 'Financial Dashboard',
       description: 'Real-time analytics platform with predictive insights.',
-      tags: ['Analytics', 'Finance', 'ML'],
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'
     },
     {
+      id: '3',
       title: 'Healthcare Chatbot',
       description: 'AI-powered patient assistance and appointment booking.',
-      tags: ['Healthcare', 'Chatbot', 'Automation'],
       image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop'
     },
     {
+      id: '4',
       title: 'Logistics Optimizer',
       description: 'Route optimization and delivery tracking system.',
-      tags: ['Logistics', 'Optimization', 'ML'],
       image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop'
-    },
-    {
-      title: 'Content Generator',
-      description: 'AI writing assistant for marketing and social media.',
-      tags: ['AI', 'Content', 'Marketing'],
-      image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop'
     }
   ];
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const { data } = await axios.get(`${API_URL}/api/projects`);
+      setProjects(data.length > 0 ? data : defaultProjects);
+    } catch (error) {
+      setProjects(defaultProjects);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Auto-scroll effect
   useEffect(() => {
@@ -334,7 +349,7 @@ function ProjectsSection() {
       >
         {projects.map((project, index) => (
           <motion.div
-            key={index}
+            key={project.id || index}
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -357,13 +372,16 @@ function ProjectsSection() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-white mb-2">{project.title}</h3>
                 <p className="text-gray-400 text-sm mb-4">{project.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, i) => (
-                    <span key={i} className="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-300">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {project.link && (
+                  <a 
+                    href={project.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-cyan-400 text-sm hover:text-cyan-300"
+                  >
+                    View Project <ExternalLink size={14} />
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>
