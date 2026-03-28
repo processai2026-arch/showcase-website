@@ -27,3 +27,7 @@ Thumbs.db
 
 # Test files
 coverage/
+-e 
+# Environment files
+*.env
+*.env.*
