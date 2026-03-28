@@ -177,7 +177,7 @@ class LoginRequest(BaseModel):
 class BookingRequest(BaseModel):
     name: str
     email: EmailStr
-    phone: str
+    phone: Optional[str] = None
     company: Optional[str] = None
     service_type: str
     budget: Optional[str] = None

@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Calendar, User, Mail, Phone, Building, DollarSign, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, Mail, Briefcase, MessageSquare, Calendar, CheckCircle, Loader2 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-const serviceTypes = [
+const serviceOptions = [
   'AI Automation',
-  'Machine Learning',
-  'AI Integration',
-  'Custom Development',
+  'Chatbot Development',
+  'Web Development',
+  'Custom AI Solution',
   'Consulting',
   'Other'
 ];
 
-const budgetRanges = [
-  '$5,000 - $15,000',
-  '$15,000 - $50,000',
-  '$50,000 - $100,000',
-  '$100,000+',
-  'Not sure yet'
-];
-
 export default function Booking() {
-  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -59,24 +50,25 @@ export default function Booking() {
     }
   };
 
+  // Success State
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-deep-black flex items-center justify-center p-6" data-testid="booking-success">
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6" data-testid="booking-success">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass rounded-3xl p-12 max-w-md text-center"
+          className="max-w-md w-full text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 flex items-center justify-center mx-auto mb-8">
             <CheckCircle size={40} className="text-white" />
           </div>
-          <h2 className="text-3xl font-display font-bold mb-4">Booking Confirmed!</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Thank You!</h2>
           <p className="text-gray-400 mb-8">
-            Thank you for your interest. We'll review your request and get back to you within 24 hours.
+            Your booking request has been received. We'll get back to you within 24 hours.
           </p>
           <Link
             to="/home"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple text-white font-semibold"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-medium"
             data-testid="back-home-btn"
           >
             Back to Home
@@ -87,168 +79,133 @@ export default function Booking() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-black py-12 px-6" data-testid="booking-page">
+    <div className="min-h-screen bg-[#050508] py-12 px-6" data-testid="booking-page">
       {/* Background */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-neon-blue/10 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-neon-purple/10 rounded-full blur-[150px]" />
+        <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-3xl mx-auto">
-        {/* Back button */}
+      <div className="max-w-xl mx-auto">
+        {/* Back Link */}
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
         >
           <Link 
             to="/home" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-10 transition-colors"
             data-testid="back-link"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} />
             Back to Home
           </Link>
         </motion.div>
 
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-10"
         >
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            Book a <span className="gradient-text">Consultation</span>
+          <h1 className="text-4xl font-bold text-white mb-3">
+            Book a Call
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400">
             Tell us about your project and we'll get back to you within 24 hours.
           </p>
         </motion.div>
 
         {/* Form */}
         <motion.form
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           onSubmit={handleSubmit}
-          className="glass rounded-3xl p-8 md:p-12 space-y-6"
+          className="space-y-5"
           data-testid="booking-form"
         >
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400" data-testid="error-message">
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400 text-sm" data-testid="error-message">
               {error}
             </div>
           )}
 
-          {/* Name & Email */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                <User size={16} /> Full Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all"
-                placeholder="John Doe"
-                data-testid="input-name"
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                <Mail size={16} /> Email *
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all"
-                placeholder="john@company.com"
-                data-testid="input-email"
-              />
-            </div>
+          {/* Name */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <User size={14} /> Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"
+              data-testid="input-name"
+            />
           </div>
 
-          {/* Phone & Company */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                <Phone size={16} /> Phone *
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all"
-                placeholder="+1 (555) 123-4567"
-                data-testid="input-phone"
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                <Building size={16} /> Company
-              </label>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all"
-                placeholder="Acme Inc."
-                data-testid="input-company"
-              />
-            </div>
+          {/* Email */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <Mail size={14} /> Email *
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john@company.com"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"
+              data-testid="input-email"
+            />
           </div>
 
-          {/* Service Type & Budget */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                Service Type *
-              </label>
-              <select
-                name="service_type"
-                required
-                value={formData.service_type}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all appearance-none cursor-pointer"
-                data-testid="select-service"
-              >
-                <option value="" disabled className="bg-deep-black">Select a service</option>
-                {serviceTypes.map(type => (
-                  <option key={type} value={type} className="bg-deep-black">{type}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                <DollarSign size={16} /> Budget Range
-              </label>
-              <select
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all appearance-none cursor-pointer"
-                data-testid="select-budget"
-              >
-                <option value="" className="bg-deep-black">Select budget range</option>
-                {budgetRanges.map(range => (
-                  <option key={range} value={range} className="bg-deep-black">{range}</option>
-                ))}
-              </select>
-            </div>
+          {/* Service */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <Briefcase size={14} /> Service *
+            </label>
+            <select
+              name="service_type"
+              required
+              value={formData.service_type}
+              onChange={handleChange}
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all appearance-none cursor-pointer"
+              data-testid="select-service"
+            >
+              <option value="" disabled className="bg-[#0a0a0f]">Select a service</option>
+              {serviceOptions.map(service => (
+                <option key={service} value={service} className="bg-[#0a0a0f]">{service}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Message */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <MessageSquare size={14} /> Message *
+            </label>
+            <textarea
+              name="message"
+              required
+              value={formData.message}
+              onChange={handleChange}
+              rows={4}
+              placeholder="Tell us about your project..."
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all resize-none"
+              data-testid="input-message"
+            />
           </div>
 
           {/* Preferred Date */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-              <Calendar size={16} /> Preferred Date *
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <Calendar size={14} /> Preferred Date *
             </label>
             <input
               type="date"
@@ -257,25 +214,8 @@ export default function Booking() {
               value={formData.preferred_date}
               onChange={handleChange}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"
               data-testid="input-date"
-            />
-          </div>
-
-          {/* Message */}
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-              <MessageSquare size={16} /> Project Details *
-            </label>
-            <textarea
-              name="message"
-              required
-              value={formData.message}
-              onChange={handleChange}
-              rows={5}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-all resize-none"
-              placeholder="Tell us about your project, goals, and any specific requirements..."
-              data-testid="input-message"
             />
           </div>
 
@@ -283,19 +223,23 @@ export default function Booking() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-neon-blue/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
             data-testid="submit-btn"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="animate-spin" size={20} />
-                Submitting...
+                <Loader2 className="animate-spin" size={18} />
+                Sending...
               </>
             ) : (
-              'Submit Booking Request'
+              'Submit Request'
             )}
           </button>
         </motion.form>
+
+        <p className="text-center text-gray-500 text-sm mt-8">
+          We typically respond within 24 hours.
+        </p>
       </div>
     </div>
   );
