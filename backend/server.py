@@ -145,12 +145,20 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Process AI API", lifespan=lifespan)
 
 # CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+cors_origins_env = os.environ.get("CORS_ORIGINS", "")
+if cors_origins_env == "*":
+    cors_origins = ["*"]
+else:
+    cors_origins = [
         os.environ.get("FRONTEND_URL", "http://localhost:3000"),
         "http://localhost:3000"
-    ],
+    ]
+    if cors_origins_env:
+        cors_origins.extend(cors_origins_env.split(","))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

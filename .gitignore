@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment files
+**/.env
+**/.env.*
+.env.local
+.env.production
+
+# Sensitive files
+memory/test_credentials.md
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+/var/log/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.js
+*.spec.js
+coverage/
