@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
 import os
 import bcrypt
@@ -305,10 +305,62 @@ class ContentModel(BaseModel):
     key: str
     value: dict
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
 # ─── Health ───────────────────────────────────────────────────────────────────
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "service": "Process AI API"}
+
+# ─── Chat Endpoint ────────────────────────────────────────────────────────────
+@app.post("/api/chat")
+async def chat_endpoint(request: ChatRequest):
+    groq_api_key = os.environ.get("GROQ_API_KEY")
+    if not groq_api_key:
+        return {"content": "I am offline until you add a GROQ_API_KEY to the backend .env file!"}
+
+    try:
+        from groq import AsyncGroq
+    except ImportError:
+        return {"content": "Groq library is not installed on the backend."}
+
+    client = AsyncGroq(api_key=groq_api_key)
+
+    services = await db.services.find({}, {"_id": 0, "title": 1, "description": 1}).to_list(100)
+    projects = await db.projects.find({}, {"_id": 0, "title": 1, "description": 1}).to_list(100)
+    
+    svc_text = "\\n- ".join([f"{s.get('title')}: {s.get('description')}" for s in services]) if services else "AI Automation"
+    proj_text = "\\n- ".join([f"{p.get('title')}: {p.get('description')}" for p in projects]) if projects else "Various AI projects"
+
+    system_prompt = f"""You are the official AI assistant for Process AI, an elite AI Automation Agency.
+You are extremely professional, concise, and helpful. You answer questions strictly based on the agency's data:
+Current Services: 
+- {svc_text}
+
+Current Projects: 
+- {proj_text}
+
+Keep your answers brief, friendly. If the user wants to book a call, direct them to use the primary booking form. DO NOT hallucinate services we do not offer."""
+
+    messages = [{"role": "system", "content": system_prompt}]
+    for msg in request.messages:
+        messages.append({"role": msg.role, "content": msg.content})
+
+    try:
+        chat_completion = await client.chat.completions.create(
+            messages=messages,
+            model="llama-3.1-8b-instant", 
+            max_tokens=250,
+        )
+        return {"content": chat_completion.choices[0].message.content}
+    except Exception as e:
+        print(f"Groq API Error: {e}")
+        raise HTTPException(status_code=500, detail="AI Brain Error. Check logs.")
 
 # ─── Auth Endpoints ───────────────────────────────────────────────────────────
 @app.post("/api/auth/register")

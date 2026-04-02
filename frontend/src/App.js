@@ -7,6 +7,7 @@ import Booking from './pages/Booking';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             } 
           />
         </Routes>
+        <Chatbot />
       </Router>
     </AuthProvider>
   );
