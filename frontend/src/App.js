@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import LandingPage from './pages/LandingPage';
 import Home from './pages/Home';
 import Booking from './pages/Booking';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -12,7 +13,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/admin-login" element={<AdminLogin />} />
@@ -31,3 +32,4 @@ function App() {
 }
 
 export default App;
+

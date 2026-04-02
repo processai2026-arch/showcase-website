@@ -166,27 +166,29 @@ function HeroSection() {
 }
 
 // Services Section
+const GRADIENT_MAP = [
+  'from-cyan-500 to-blue-600',
+  'from-violet-500 to-purple-600',
+  'from-fuchsia-500 to-pink-600',
+  'from-amber-500 to-orange-600',
+  'from-emerald-500 to-teal-600',
+  'from-rose-500 to-red-600',
+];
+
+const DEFAULT_SERVICES = [
+  { id: '1', icon: 'Bot', title: 'AI Automation', description: 'Automate repetitive tasks with intelligent AI agents that learn and adapt to your workflow.' },
+  { id: '2', icon: 'MessageSquare', title: 'Chatbot Development', description: 'Custom chatbots powered by latest LLMs for customer support, sales, and internal tools.' },
+  { id: '3', icon: 'Globe', title: 'Web Development', description: 'Modern, scalable web applications with AI integration and premium user experience.' },
+];
+
 function ServicesSection() {
-  const services = [
-    {
-      icon: Bot,
-      title: 'AI Automation',
-      description: 'Automate repetitive tasks with intelligent AI agents that learn and adapt to your workflow.',
-      gradient: 'from-cyan-500 to-blue-600'
-    },
-    {
-      icon: MessageSquare,
-      title: 'Chatbot Development',
-      description: 'Custom chatbots powered by latest LLMs for customer support, sales, and internal tools.',
-      gradient: 'from-violet-500 to-purple-600'
-    },
-    {
-      icon: Globe,
-      title: 'Web Development',
-      description: 'Modern, scalable web applications with AI integration and premium user experience.',
-      gradient: 'from-fuchsia-500 to-pink-600'
-    }
-  ];
+  const [services, setServices] = useState(DEFAULT_SERVICES);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/api/services`)
+      .then(({ data }) => { if (data && data.length > 0) setServices(data); })
+      .catch(() => {}); // keep defaults on error
+  }, []);
 
   return (
     <section id="services" className="py-32 relative" data-testid="services-section">
@@ -204,7 +206,7 @@ function ServicesSection() {
         <div className="grid md:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <motion.div
-              key={index}
+              key={service.id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -212,11 +214,20 @@ function ServicesSection() {
               className="group relative bg-white/[0.02] border border-white/5 rounded-2xl p-8 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300"
               data-testid={`service-card-${index}`}
             >
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6`}>
-                <service.icon size={24} className="text-white" />
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${GRADIENT_MAP[index % GRADIENT_MAP.length]} flex items-center justify-center mb-6`}>
+                <Bot size={24} className="text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">{service.title}</h3>
               <p className="text-gray-400 leading-relaxed">{service.description}</p>
+              {service.features && service.features.length > 0 && (
+                <ul className="mt-4 space-y-1">
+                  {service.features.slice(0, 3).map((f, i) => (
+                    <li key={i} className="text-gray-500 text-sm flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-cyan-400 flex-shrink-0" />{f}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </motion.div>
           ))}
         </div>
@@ -230,7 +241,6 @@ function ProjectsSection() {
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // Default projects (shown when no projects in DB)
   const defaultProjects = [
@@ -261,19 +271,10 @@ function ProjectsSection() {
   ];
 
   useEffect(() => {
-    fetchProjects();
+    axios.get(`${API_URL}/api/projects`)
+      .then(({ data }) => setProjects(data.length > 0 ? data : defaultProjects))
+      .catch(() => setProjects(defaultProjects));
   }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const { data } = await axios.get(`${API_URL}/api/projects`);
-      setProjects(data.length > 0 ? data : defaultProjects);
-    } catch (error) {
-      setProjects(defaultProjects);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Auto-scroll effect
   useEffect(() => {

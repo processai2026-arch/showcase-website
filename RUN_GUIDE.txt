@@ -1,0 +1,115 @@
+============================================
+   PROCESS AI - LOCAL RUN GUIDE
+============================================
+
+
+============================================
+SECTION 1: FIRST TIME SETUP (DO ONCE)
+============================================
+
+REQUIREMENTS:
+- Python 3.11+
+- Node.js 18+
+- MongoDB (running as Windows service)
+- Yarn  →  npm install -g yarn
+
+─────────────────────────────────────────
+STEP 1: Create Python virtual environment
+─────────────────────────────────────────
+Open terminal in:  d:\showcase-website
+
+    python -m venv venv
+    .\venv\Scripts\Activate.ps1
+
+─────────────────────────────────────────
+STEP 2: Install backend packages
+─────────────────────────────────────────
+    pip install -r backend\requirements.txt
+
+─────────────────────────────────────────
+STEP 3: Create backend .env file
+─────────────────────────────────────────
+Create file at:  d:\showcase-website\backend\.env
+Paste this content:
+
+    MONGO_URL=mongodb://localhost:27017
+    DB_NAME=process_ai
+    JWT_SECRET=f541bd8650aef85004c65725074a534db452f695eb229015409e0376b6e04767
+    ADMIN_EMAIL=admin@processai.com
+    ADMIN_PASSWORD=ProcessAI@Admin2024
+
+    NOTIFICATION_EMAIL=processai2026@gmail.com
+    GMAIL_USER=processai2026@gmail.com
+    GMAIL_APP_PASSWORD=sdjb jyup ghvu hsbd
+
+    CLOUDINARY_CLOUD_NAME=dwfbum59a
+    CLOUDINARY_API_KEY=843725232585219
+    CLOUDINARY_API_SECRET=ortIEOa6xEW3992E1GHiOpPcLik
+
+─────────────────────────────────────────
+STEP 4: Create frontend .env file
+─────────────────────────────────────────
+Create file at:  d:\showcase-website\frontend\.env
+Paste this content:
+
+    REACT_APP_BACKEND_URL=http://localhost:8001
+
+─────────────────────────────────────────
+STEP 5: Install frontend packages
+─────────────────────────────────────────
+Open terminal in:  d:\showcase-website\frontend
+
+    yarn install
+
+
+============================================
+SECTION 2: RUN EVERY TIME
+============================================
+
+─────────────────────────────────────────
+Terminal 1 — Backend (FastAPI)
+─────────────────────────────────────────
+    cd d:\showcase-website
+    .\venv\Scripts\Activate.ps1
+    cd backend
+    uvicorn server:app --reload --port 8001
+
+Backend is ready when you see:
+    INFO: Uvicorn running on http://127.0.0.1:8001
+
+─────────────────────────────────────────
+Terminal 2 — Frontend (React)
+─────────────────────────────────────────
+    cd d:\showcase-website\frontend
+    yarn start
+
+Frontend is ready when you see:
+    Compiled successfully!
+    Local: http://localhost:3000
+
+
+============================================
+SECTION 3: ACCESS URLS
+============================================
+
+Client Website   →  http://localhost:3000
+Admin Login      →  http://localhost:3000/admin-login
+Admin Dashboard  →  http://localhost:3000/admin-dashboard
+Backend Health   →  http://localhost:8001/api/health
+
+
+============================================
+SECTION 4: ADMIN CREDENTIALS
+============================================
+
+Email    :  admin@processai.com
+Password :  ProcessAI@Admin2024
+
+
+============================================
+SECTION 5: TO STOP
+============================================
+
+Press Ctrl + C in each terminal
+
+============================================

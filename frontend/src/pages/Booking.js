@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, User, Mail, Briefcase, MessageSquare, Calendar, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Briefcase, MessageSquare, Calendar, CheckCircle, Loader2 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -22,6 +22,7 @@ export default function Booking() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     service: '',
     message: '',
     preferredDate: ''
@@ -60,8 +61,11 @@ export default function Booking() {
             <CheckCircle size={40} className="text-white" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-4">Thank You!</h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-gray-400 mb-3">
             Your booking request has been received. We'll get back to you within 24 hours.
+          </p>
+          <p className="text-gray-500 text-sm mb-8">
+            A confirmation email has been sent to <span className="text-cyan-400">{formData.email}</span>
           </p>
           <Link
             to="/home"
@@ -89,8 +93,8 @@ export default function Booking() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <Link 
-            to="/home" 
+          <Link
+            to="/home"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-10 transition-colors"
             data-testid="back-link"
           >
@@ -159,6 +163,23 @@ export default function Booking() {
               placeholder="john@company.com"
               className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"
               data-testid="input-email"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+              <Phone size={14} /> Phone Number *
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+91 98765 43210"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-gray-500 focus:border-cyan-500/50 focus:bg-white/[0.05] outline-none transition-all"
+              data-testid="input-phone"
             />
           </div>
 
