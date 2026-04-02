@@ -106,10 +106,4 @@ Email    :  admin@processai.com
 Password :  ProcessAI@Admin2024
 
 
-============================================
-SECTION 5: TO STOP
-============================================
 
-Press Ctrl + C in each terminal
-
-============================================
